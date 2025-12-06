@@ -1,4 +1,9 @@
 package org.example.smartshop.entities.DTO.product;
 
-public record ProductCreateDto() {
-}
+import java.math.BigDecimal;
+
+public record ProductCreateDto(
+        String name,
+        BigDecimal unitPrice,
+        int stock
+) {}
