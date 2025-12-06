@@ -31,11 +31,11 @@ public class ClientService implements IClientService {
     @Override
     @Transactional
     public ClientResponseDto createClient(ClientCreateDto dto) {
-        requireAdminRole();
+        authService.requireAdminRole();
 
         User user = User.builder()
                 .username(dto.email())
-                .password("default123")
+                .password(dto.password())
                 .role(UserRole.CLIENT)
                 .build();
 
@@ -64,7 +64,7 @@ public class ClientService implements IClientService {
     @Override
     @Transactional(readOnly = true)
     public List<ClientResponseDto> getAllClients() {
-        requireAdminRole();
+        authService.requireAdminRole();
         return clientRepository.findAll()
                 .stream()
                 .map(clientMapper::toDto)
@@ -74,9 +74,7 @@ public class ClientService implements IClientService {
     @Override
     @Transactional(readOnly = true)
     public ClientResponseDto getCurrentClientInfo() {
-        if (isAdmin()) {
-            throw new RuntimeException("Admin users don't have client information");
-        }
+        authService.requireAdminRole();
 
         Long userId = authService.getCurrentUserId();
 
@@ -89,7 +87,7 @@ public class ClientService implements IClientService {
     @Override
     @Transactional
     public ClientResponseDto updateClient(Long id, ClientUpdateDto dto) {
-        requireAdminRole();
+        authService.requireAdminRole();
 
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
@@ -103,7 +101,7 @@ public class ClientService implements IClientService {
     @Override
     @Transactional
     public void deleteClient(Long id) {
-        requireAdminRole();
+        authService.requireAdminRole();
 
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
@@ -132,13 +130,4 @@ public class ClientService implements IClientService {
         }
     }
 
-    private void requireAdminRole() {
-        if (!isAdmin()) {
-            throw new RuntimeException("Access denied: Admin privileges required");
-        }
-    }
-
-    private boolean isAdmin() {
-        return UserRole.ADMIN.name().equals(authService.getCurrentUserRole());
-    }
 }
