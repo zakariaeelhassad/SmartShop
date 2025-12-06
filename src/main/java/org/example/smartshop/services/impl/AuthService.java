@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.smartshop.entities.DTO.users.LoginResponseDto;
 import org.example.smartshop.entities.DTO.users.LoginRequestDto;
+import org.example.smartshop.entities.enums.UserRole;
 import org.example.smartshop.entities.models.User;
 import org.example.smartshop.repository.UserRepository;
 import org.example.smartshop.services.IAuthService;
@@ -62,5 +63,15 @@ public class AuthService implements IAuthService {
 
     public String getCurrentUserRole() {
         return (String) httpSession.getAttribute("userRole");
+    }
+
+    public void requireAdminRole() {
+        if (!isAdmin()) {
+            throw new RuntimeException("Access denied: Admin privileges required");
+        }
+    }
+
+    public boolean isAdmin() {
+        return UserRole.ADMIN.name().equals(getCurrentUserRole());
     }
 }

@@ -23,7 +23,7 @@ public class Paiement {
     @ManyToOne
     private Commande commande;
 
-    private int numeroPaiement;
+    private Integer numeroPaiement;
     private BigDecimal montant;
 
     @Enumerated(EnumType.STRING)
@@ -34,4 +34,9 @@ public class Paiement {
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus statut;
+
+    // Nouveaux attributs selon le cahier des charges
+    private String reference;  // Numéro de chèque, référence de virement, numéro de reçu
+    private String banque;     // Nom de la banque (pour chèque et virement)
+    private LocalDateTime dateEcheance;  // Date d'échéance (pour chèque)
 }
